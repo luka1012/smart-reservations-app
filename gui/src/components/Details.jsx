@@ -29,20 +29,20 @@ const Details = (props) => {
   return (
     <DetailsWrapper>
       <DetailsItemWrapper>
-        <DetailsItem onClick={() => setDetailShow("location")}>
+        <DetailsItem>
           <Icon
             name="location arrow"
             size="large"
             style={{ margin: "1.2vh 0.7vw" }}
           />
         </DetailsItem>
-        <DetailsItem onClick={() => setDetailShow("time")}>
+        <DetailsItem>
           <Icon name="clock" size="large" style={{ margin: "1.2vh 0.7vw" }} />
         </DetailsItem>
-        <DetailsItem onClick={() => setDetailShow("bed")}>
+        <DetailsItem>
           <Icon name="bed" size="large" style={{ margin: "1.2vh 0.7vw" }} />
         </DetailsItem>
-        <DetailsItem onClick={() => setDetailShow("mobile")}>
+        <DetailsItem>
           <Icon
             name="mobile alternate"
             size="large"

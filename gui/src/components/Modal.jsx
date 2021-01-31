@@ -16,10 +16,12 @@ import {
 import { Formik, Field, ErrorMessage, FieldArray } from "formik";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { useToasts } from "react-toast-notifications";
 
 const UserModal = (props) => {
   const [activeIndexs, setActiveIndexs] = useState([0, 1, 2, 3, 4, 5]);
   const [sending, isSending] = useState(false);
+  const { addToast } = useToasts();
 
   return (
     <Modal
@@ -34,11 +36,18 @@ const UserModal = (props) => {
       </Modal.Header>
       <Modal.Body style={{ fontFamily: "'Arvo', serif" }}>
         <Formik
-          initialValues={{date: new Date()}}
+          initialValues={{ date: new Date() }}
           onSubmit={async (values, { setSubmitting }) => {
             isSending(true);
 
             console.log(values);
+
+            addToast("Test", {
+              appearance: "error",
+              autoDismiss: true,
+            });
+
+            props.setShow(false)
 
             // setTimeout(() => {
             //   Axios.post(
@@ -82,7 +91,7 @@ const UserModal = (props) => {
                     width: "5vw",
                   }}
                 >
-                  <Icon name="calendar" color="green"/> Date:
+                  <Icon name="calendar" color="green" /> Date:
                 </div>
                 <DatePicker
                   selected={values.date}
@@ -105,7 +114,7 @@ const UserModal = (props) => {
                     width: "5vw",
                   }}
                 >
-                  <Icon name="user" color="green"/> People:
+                  <Icon name="user" color="green" /> People:
                 </div>
                 <Select
                   placeholder="Select people"
