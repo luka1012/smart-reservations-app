@@ -5,7 +5,6 @@ import {
   DashboardNav as Navigation,
   ComponentWidget,
   WidgetItem,
-  FormikWrapper,
 } from "../util/RestaurantStyledComponents";
 import {
   Button,
@@ -14,30 +13,33 @@ import {
   Image,
   Message,
   Divider,
-  Select,
 } from "semantic-ui-react";
 import { Formik, Field, ErrorMessage } from "formik";
+import { useSelector, connect } from "react-redux";
 import Axios from "axios";
-import { useToasts } from "react-toast-notifications";
-
-const roles = [
-  { value: "admin", text: "ADMIN" },
-  { value: "user", text: "USER" },
-];
+import { login } from "../redux/actions";
 
 const NewUser = (props) => {
   const [submitting, isSubmitting] = useState(false);
-  const [successfull, setSuccesfull] = useState(false);
+  const [success, isSuccess] = useState(false);
 
-  const { addToast } = useToasts();
+  const user = useSelector((state) => state.auth.user);
+
+  const token = useSelector((state) => state.auth.token);
 
   return (
     <div>
-      <Headline>Add new user</Headline>
+      <Headline>Update profile</Headline>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <FormikWrapper style={{ padding: "50px" }}>
+        <div style={{ padding: "50px" }}>
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{
+              username: user.username,
+              firstname: user.firstname,
+              password: user.password,
+              lastname: user.lastname,
+              email: user.email,
+            }}
             validate={(values) => {
               const errors = {};
               if (!values.email) {
@@ -52,20 +54,22 @@ const NewUser = (props) => {
             onSubmit={async (values, { setSubmitting }) => {
               isSubmitting(true);
 
-              setTimeout(() => {
-                Axios.post(
-                  `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/createUser`,
-                  { ...values }
-                )
-                  .then((res) => {
-                    setSubmitting(false);
-                    isSubmitting(false);
-                    addToast("User created!", {
-                      appearance: "success",
-                    });
-                  })
-                  .catch((err) => console.log(err));
-              }, 2000);
+              Axios.post(
+                `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/updateUser`,
+                values,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              )
+                .then((res) => {
+                  isSuccess(true);
+                  setSubmitting(false);
+                  isSubmitting(false);
+                  props.login(true, values)
+                })
+                .catch((e) => console.log(e));
             }}
           >
             {({
@@ -76,7 +80,7 @@ const NewUser = (props) => {
               handleBlur,
               handleSubmit,
               isSubmitting,
-              setFieldValue,
+              /* and other goodies */
             }) => (
               <Form
                 style={{
@@ -89,6 +93,7 @@ const NewUser = (props) => {
                 size="large"
               >
                 <input
+                  disabled
                   style={{ margin: "10px 0" }}
                   name="username"
                   placeholder="Username"
@@ -134,17 +139,26 @@ const NewUser = (props) => {
                   color="blue"
                   style={{ marginTop: "25px" }}
                   disabled={isSubmitting}
-                  loading={submitting}
                 >
-                  Add
+                  Update
                 </Button>
               </Form>
             )}
           </Formik>
-        </FormikWrapper>
+        </div>
+        {success && (
+          <Message color="green" style={{ width: "25vw", height: "10vh" }}>
+            <Message.Header>Successfull</Message.Header>
+            <p
+              style={{ fontSize: "15px", marginTop: "10px", color: "#253858" }}
+            >
+              Profile has been successfully updated!
+            </p>
+          </Message>
+        )}
       </div>
     </div>
   );
 };
 
-export default NewUser;
+export default connect(null, { login })(NewUser);

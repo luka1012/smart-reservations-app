@@ -2,15 +2,12 @@ package restaurant.administrator.model.dao;
 
 
 import lombok.*;
-import restaurant.administrator.util.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.io.*;
-import java.util.*;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "restaurants")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,24 +18,7 @@ public class RestaurantDao implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull(message = "Project name is required!")
     private String name;
-    @Keyword
-    @NotNull(message = "Project's keyword is required!")
-    private String keyword;
-    @NotNull(message = "Project needs to have a manager!")
+    private String address;
     private String manager;
-
-    @OneToMany
-    private List<UserDao> participants;
-
-    @Override
-    public String toString() {
-        return "ProjectDao{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", keyword='" + keyword + '\'' +
-                ", manager='" + manager + '\'' +
-                '}';
-    }
 }

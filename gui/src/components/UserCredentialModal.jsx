@@ -15,7 +15,7 @@ import {
   ComponentWidget,
   WidgetItem,
   StyledLabel,
-} from "../RestaurantStyledComponents";
+} from "../util/RestaurantStyledComponents";
 import { Formik, Field, ErrorMessage } from "formik";
 import Axios from "axios";
 

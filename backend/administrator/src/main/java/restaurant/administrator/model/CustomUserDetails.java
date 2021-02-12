@@ -1,6 +1,5 @@
 package restaurant.administrator.model;
 
-import agile.administrator.model.dao.*;
 import lombok.*;
 import org.springframework.security.core.*;
 import org.springframework.security.core.authority.*;

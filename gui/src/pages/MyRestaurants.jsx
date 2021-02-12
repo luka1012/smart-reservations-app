@@ -17,6 +17,7 @@ import {
   Button,
   Card,
   Placeholder,
+  Select,
 } from "semantic-ui-react";
 import Modal from "../components/Modal";
 import Logo from "../assets/images/logo.png";
@@ -49,44 +50,6 @@ const properties = {
   ),
 };
 
-const restaurants = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1599451877948-273609d3c7e2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    name: "Restaurant 1",
-    address: "Address 1",
-    current: 5,
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1599451877948-273609d3c7e2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    name: "Restaurant 2",
-    address: "Address 2",
-    current: 5,
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1599451877948-273609d3c7e2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    name: "Restaurant 3",
-    address: "Address 3",
-    current: 5,
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1599451877948-273609d3c7e2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    name: "Restaurant4",
-    address: "Address4",
-    current: 5,
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1599451877948-273609d3c7e2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    name: "Restaurant 5",
-    address: "Address 5",
-    current: 5,
-  },
-];
-
 const secondVariants = {
   visible: {
     opacity: 1,
@@ -105,6 +68,8 @@ const Restaurants = (props) => {
 
   const token = useSelector((state) => state.auth.token);
 
+  const user = useSelector((state) => state.auth.user);
+
   const slideRef = useRef();
 
   const handleBack = () => {
@@ -115,10 +80,24 @@ const Restaurants = (props) => {
     slideRef.current.goNext();
   };
 
+  const options = [
+    {
+      key: "open",
+      text: "Open",
+    },
+    {
+      key: "closed",
+      text: "Closed",
+    },
+  ];
+
   useEffect(() => {
     Axios.get(
-      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurants/getAllRestaurants`,
+      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurants/getRestaurants`,
       {
+        params: {
+          manager: `${user.firstname} ${user.lastname}`,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -137,7 +116,7 @@ const Restaurants = (props) => {
           "url('https://images.unsplash.com/photo-1600331350693-a56b297f6f19?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=675&q=80')",
       }}
     >
-      <HomeWrapper>
+      <HomeWrapper style={{ height: dataToRender.length < 3 && "100vh" }}>
         <Navigation />
         <div style={{ display: "flex", flexDirection: "column" }}>
           {dataToRender.map((restaurant) => (
@@ -167,9 +146,7 @@ const Restaurants = (props) => {
                       {restaurant.address}
                     </ReviewNameWrapper>
                     <ReviewNameWrapper>
-                      <Label color="green" size="large" basic>
-                        Open
-                      </Label>
+                      <Select options={options} />
                     </ReviewNameWrapper>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
@@ -303,7 +280,7 @@ const Restaurants = (props) => {
         <div
           style={{
             boxShadow: "0px 7px 13px 5px rgba(0, 0, 0, 0.17)",
-            marginTop: "5vh",
+            marginTop: dataToRender.length < 3 ? "90vh" : "5vh",
             height: "5vh",
             width: "70vw",
             display: "flex",

@@ -9,12 +9,10 @@ import java.util.*;
 
 
 @Component
-public interface UserRepository extends JpaRepository<UserDao, Long> {
+@Transactional
+public interface ImageRepository extends JpaRepository<ImageDao, Long> {
 
-    Optional<UserDao> findByUsername(String username);
+    Optional<ImageDao> findByData(String name);
 
-    Optional<UserDao> findByEmail(String email);
-
-    @Override
-    List<UserDao> findAll();
+    Optional<List<ImageDao>> findByRestaurant(String restaurant);
 }

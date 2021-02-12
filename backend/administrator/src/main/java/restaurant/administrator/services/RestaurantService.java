@@ -21,6 +21,9 @@ public class RestaurantService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ImageRepository imageRepository;
+
     @Log
     public RestaurantDao createRestaurant(RestaurantDto restaurant) throws RestaurantAlreadyExistsException {
 
@@ -34,8 +37,16 @@ public class RestaurantService {
         RestaurantDao restaurantDao = new RestaurantDao();
 
         restaurantDao.setName(restaurant.getName());
-        restaurantDao.setKeyword(restaurant.getKeyword());
+        restaurantDao.setAddress(restaurant.getAddress());
         restaurantDao.setManager(restaurant.getManager());
+
+        restaurant.getImages().forEach(image -> {
+            ImageDao imageDao = new ImageDao();
+            imageDao.setRestaurant(restaurantName);
+            imageDao.setData(image.getBytes());
+
+            imageRepository.save(imageDao);
+        });
 
         return restaurantRepository.save(restaurantDao);
     }
@@ -51,9 +62,9 @@ public class RestaurantService {
 
             RestaurantDao restaurantDao = byName.get();
 
-            restaurantDao.setManager(restaurant.getManager());
-            restaurantDao.setKeyword(restaurant.getKeyword());
+            restaurantDao.setAddress(restaurant.getAddress());
             restaurantDao.setName(restaurant.getName());
+            restaurantDao.setManager(restaurant.getManager());
 
             return restaurantRepository.save(restaurantDao);
 
@@ -78,42 +89,6 @@ public class RestaurantService {
     }
 
     @Log
-    public void assignUser(UserDto userDto, String restaurantName) throws RestaurantNotFoundException {
-
-        Optional<RestaurantDao> byName = restaurantRepository.findByName(restaurantName);
-
-        Optional<UserDao> byUsername = userRepository.findByUsername(userDto.getUsername());
-
-        if (byName.isPresent()) {
-
-            RestaurantDao restaurantDao = byName.get();
-
-            UserDao userDao = new UserDao();
-
-            userDao.setUsername(userDto.getUsername());
-            userDao.setFirstname(userDto.getFirstname());
-            userDao.setLastname(userDto.getLastname());
-            userDao.setEmail(userDto.getEmail());
-
-            List<UserDao> participants = restaurantDao.getParticipants();
-
-            participants.add(userDao);
-
-            restaurantRepository.save(restaurantDao);
-
-            if (byUsername.isPresent()) {
-
-                UserDao user = byUsername.get();
-
-                userRepository.save(user);
-            }
-        }
-        else
-            throw new RestaurantNotFoundException();
-    }
-
-
-    @Log
     public RestaurantDao getRestaurantByName(String restaurantName) throws RestaurantNotFoundException {
 
         Optional<RestaurantDao> byName = restaurantRepository.findByName(restaurantName);
@@ -125,20 +100,75 @@ public class RestaurantService {
     }
 
     @Log
-    public List<RestaurantDao> getAllRestaurants() {
+    public List<RestaurantDto> getAllRestaurants() {
 
-        return restaurantRepository.findAll();
+        List<RestaurantDao> all = restaurantRepository.findAll();
+
+        List<RestaurantDto> restaurants = new ArrayList<>();
+
+        all.forEach(item -> {
+            RestaurantDto restaurantDto = new RestaurantDto();
+
+            restaurantDto.setAddress(item.getAddress());
+            restaurantDto.setManager(item.getManager());
+            restaurantDto.setName(item.getName());
+
+            Optional<List<ImageDao>> byRestaurant = imageRepository.findByRestaurant(item.getName());
+
+            if(byRestaurant.isPresent())
+            {
+                List<ImageDao> imageDaos = byRestaurant.get();
+
+                List<String> images = new ArrayList<>();
+
+                imageDaos.forEach(image -> {
+                    images.add(new String(image.getData()));
+                });
+
+                restaurantDto.setImages(images);
+            }
+            restaurants.add(restaurantDto);
+        });
+
+        return restaurants;
     }
 
     @Log
-    public List<RestaurantDao> getRestaurantsByManager(String manager) throws RestaurantNotFoundException {
+    public List<RestaurantDto> getRestaurantsByManager(String manager) throws RestaurantNotFoundException {
 
         Optional<List<RestaurantDao>> byManager = restaurantRepository.findByManager(manager);
 
-        if (byManager.isPresent())
-            return byManager.get();
-
-        else
+        if(byManager.isEmpty())
             throw new RestaurantNotFoundException();
+
+        List<RestaurantDao> all = byManager.get();
+
+        List<RestaurantDto> restaurants = new ArrayList<>();
+
+        all.forEach(item -> {
+            RestaurantDto restaurantDto = new RestaurantDto();
+
+            restaurantDto.setAddress(item.getAddress());
+            restaurantDto.setManager(item.getManager());
+            restaurantDto.setName(item.getName());
+
+            Optional<List<ImageDao>> byRestaurant = imageRepository.findByRestaurant(item.getName());
+
+            if(byRestaurant.isPresent())
+            {
+                List<ImageDao> imageDaos = byRestaurant.get();
+
+                List<String> images = new ArrayList<>();
+
+                imageDaos.forEach(image -> {
+                    images.add(new String(image.getData()));
+                });
+
+                restaurantDto.setImages(images);
+            }
+            restaurants.add(restaurantDto);
+        });
+
+        return restaurants;
     }
 }

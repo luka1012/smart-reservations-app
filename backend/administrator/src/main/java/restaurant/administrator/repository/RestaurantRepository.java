@@ -12,7 +12,7 @@ public interface RestaurantRepository extends JpaRepository<RestaurantDao, Long>
 
     Optional<RestaurantDao> findByName(String name);
 
-    Optional<List<RestaurantDao>> findByManager(String manager);
+    Optional<List<RestaurantDao>> findByManager(String name);
 
     @Override
     List<RestaurantDao> findAll();

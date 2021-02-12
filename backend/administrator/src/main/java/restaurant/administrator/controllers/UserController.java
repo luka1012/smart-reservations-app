@@ -2,6 +2,7 @@ package restaurant.administrator.controllers;
 
 
 
+import com.fasterxml.jackson.annotation.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.validation.annotation.*;
@@ -64,9 +65,9 @@ public class UserController {
     @GetMapping("/getAllUsers")
     public ResponseEntity<Object> getAllUsers() {
 
-        List<UserDao> allUsers = userService.getAllUsers();
+        List<UserDto> allUsers = userService.getAllUsers();
 
-        return ResponseEntity.ok(allUsers);
+        return ResponseEntity.ok().body(allUsers);
     }
 
     @GetMapping("/getUserCredentials")

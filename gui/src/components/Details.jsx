@@ -6,7 +6,7 @@ import {
   DetailsItemWrapper,
   DetailsTextWrapper,
   DetailsImageWrapper,
-} from "../RestaurantStyledComponents";
+} from "../util/RestaurantStyledComponents";
 import { Icon, Image } from "semantic-ui-react";
 
 let index = 0;
@@ -16,33 +16,33 @@ const Details = (props) => {
 
   const pages = ["location", "time", "bed", "mobile"];
 
-  setInterval(() => {
-    setDetailShow(pages[index]);
-
-    if (index > pages.length) {
-      index = 0;
-    } else {
-      index++;
-    }
-  }, 5000);
+  // setInterval(() => {
+  //   setDetailShow(pages[index]);
+  //
+  //   if (index > pages.length) {
+  //     index = 0;
+  //   } else {
+  //     index++;
+  //   }
+  // }, 5000);
 
   return (
     <DetailsWrapper>
       <DetailsItemWrapper>
-        <DetailsItem>
+        <DetailsItem onClick={() => setDetailShow("location")}>
           <Icon
             name="location arrow"
             size="large"
             style={{ margin: "1.2vh 0.7vw" }}
           />
         </DetailsItem>
-        <DetailsItem>
+        <DetailsItem onClick={() => setDetailShow("time")}>
           <Icon name="clock" size="large" style={{ margin: "1.2vh 0.7vw" }} />
         </DetailsItem>
-        <DetailsItem>
+        <DetailsItem onClick={() => setDetailShow("bed")}>
           <Icon name="bed" size="large" style={{ margin: "1.2vh 0.7vw" }} />
         </DetailsItem>
-        <DetailsItem>
+        <DetailsItem onClick={() => setDetailShow("mobile")}>
           <Icon
             name="mobile alternate"
             size="large"

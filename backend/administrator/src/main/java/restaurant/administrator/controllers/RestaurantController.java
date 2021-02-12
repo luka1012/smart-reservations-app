@@ -49,18 +49,10 @@ public class RestaurantController {
         return ResponseEntity.ok("Restaurant successfully deleted");
     }
 
-    @PostMapping("/assignUser/{restaurantName}")
-    public ResponseEntity<Object> assignUser(@Valid @NotNull(message = AdministratorConstants.RESTAURANT_CAN_T_BE_NULL) @RequestBody UserDto user, @NotNull @PathVariable("restaurantName") String restaurantName) throws RestaurantNotFoundException {
-
-        restaurantService.assignUser(user, restaurantName);
-
-        return ResponseEntity.ok("User assigned to restaurant");
-    }
-
     @GetMapping("/getAllRestaurants")
     public ResponseEntity<Object> getRestaurants() {
 
-        List<RestaurantDao> allRestaurants = restaurantService.getAllRestaurants();
+        List<RestaurantDto> allRestaurants = restaurantService.getAllRestaurants();
 
         return ResponseEntity.ok(allRestaurants);
     }
@@ -77,7 +69,7 @@ public class RestaurantController {
     @GetMapping("/getRestaurants")
     public ResponseEntity<Object> getRestaurantsByManager(@NotNull(message = AdministratorConstants.RESTAURANT_NAME_CAN_T_BE_NULL) @RequestParam(name = "manager") String manager) throws RestaurantNotFoundException {
 
-        List<RestaurantDao> restaurants = restaurantService.getRestaurantsByManager(manager);
+        List<RestaurantDto> restaurants = restaurantService.getRestaurantsByManager(manager);
 
         return ResponseEntity.ok(restaurants);
     }

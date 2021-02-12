@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.Transactional;
 import restaurant.administrator.aspects.*;
 import restaurant.administrator.exceptions.*;
 import restaurant.administrator.model.*;
@@ -13,6 +14,7 @@ import restaurant.administrator.model.dto.*;
 import restaurant.administrator.repository.*;
 import restaurant.administrator.util.*;
 
+import javax.transaction.*;
 import java.util.*;
 
 @Service
@@ -27,8 +29,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Log
+    @Transactional
     public UserDetails loadUserByUsername(String username) {
 
         if (username == null)
@@ -80,6 +85,14 @@ public class UserService implements UserDetailsService {
             userDao.setFirstname(userDto.getFirstname());
             userDao.setLastname(userDto.getLastname());
             userDao.setEmail(userDto.getEmail());
+
+            Optional<UserCredentialsDao> credentials = userCredentialsRepository.findByUsername(userDto.getUsername());
+
+            if (credentials.isPresent()) {
+                UserCredentialsDao userCredentialsDao = credentials.get();
+
+                userCredentialsDao.setPassword(userDto.getPassword());
+            }
 
             return userRepository.save(userDao);
 
@@ -158,18 +171,33 @@ public class UserService implements UserDetailsService {
     }
 
     @Log
-    public List<UserDao> getAllUsers() {
+    public List<UserDto> getAllUsers() {
 
         List<UserDao> all = userRepository.findAll();
 
-        for(UserDao user : all) {
+        List<UserDto> result = new ArrayList<>();
 
-            Optional<UserCredentialsDao> byUsername = userCredentialsRepository.findByUsername(user.getUsername());
+        all.forEach(item -> {
 
-            byUsername.ifPresent(userCredentialsDao -> user.setRole(userCredentialsDao.getRole()));
-        }
+            String username = item.getUsername();
 
-        return all;
+            Optional<UserCredentialsDao> byUsername = userCredentialsRepository.findByUsername(username);
+
+            byUsername.ifPresent(item::setCredentials);
+        });
+
+        all.forEach(user -> {
+            UserDto userDto = new UserDto();
+            userDto.setFirstname(user.getFirstname());
+            userDto.setLastname(user.getLastname());
+            userDto.setEmail(user.getEmail());
+            userDto.setRole(user.getCredentials().getRole());
+            userDto.setUsername(user.getUsername());
+
+            result.add(userDto);
+        });
+
+        return result;
     }
 
     @Log
@@ -202,6 +230,14 @@ public class UserService implements UserDetailsService {
         userDao.setFirstname(userDto.getFirstname());
         userDao.setLastname(userDto.getLastname());
         userDao.setEmail(userDto.getEmail());
+
+        if(userDto.getProfilePhoto() != null) {
+            ImageDao image = new ImageDao();
+            image.setData(userDto.getProfilePhoto().getBytes());
+            image.setOwner(userDto.getUsername());
+
+            imageRepository.save(image);
+        }
 
         return userRepository.save(userDao);
     }

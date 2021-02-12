@@ -26,6 +26,8 @@ public class UserDto implements Serializable {
     private String email;
     @NotNull
     private String role;
+    @NotNull
+    private String profilePhoto;
 
     public String toString() {
         return "UserDto{" +

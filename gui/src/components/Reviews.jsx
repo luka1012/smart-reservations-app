@@ -3,7 +3,9 @@ import PropTypes from "prop-types";
 import {
   DetailsWrapper,
   ReviewNameWrapper,
-} from "../RestaurantStyledComponents";
+} from "../util/RestaurantStyledComponents";
+import { motion } from "framer-motion";
+
 import { Segment, Image, Icon } from "semantic-ui-react";
 
 const Reviews = (props) => {
@@ -33,50 +35,61 @@ const Reviews = (props) => {
     setShownReview(shown === 1 ? 0 : 1);
   }, 3000);
 
+  const secondVariants = {
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.45 },
+    },
+    hidden: { opacity: 0 },
+  };
+
   return (
     <DetailsWrapper>
-      <Segment
-        color="blue"
-        raised
-        style={{
-          width: "50vw",
-          height: "40vh",
-          margin: "0 auto",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div
+      <motion.div initial="hidden" animate="visible" exit="hidden" style={{margin: "0 auto"}}>
+        <Segment
+          color="blue"
+          raised
           style={{
-            height: "15vh",
-            width: "47vw",
-            borderBottom: "1px solid grey",
+            width: "50vw",
+            height: "40vh",
             margin: "0 auto",
             display: "flex",
-            flexDirection: "row",
-            padding: 5,
+            flexDirection: "column",
           }}
         >
-          <Image size="small" src={`${reviews[shown].image}`} />
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <ReviewNameWrapper>
-              <Icon name="user" /> {reviews[shown].name}
-            </ReviewNameWrapper>{" "}
-            <ReviewNameWrapper>
-              <Icon name="cog" /> {reviews[shown].role}
-            </ReviewNameWrapper>
-            <ReviewNameWrapper>
-              <Icon name="calendar outline" />
-              {reviews[shown].time}
-            </ReviewNameWrapper>
+          <div
+            style={{
+              height: "15vh",
+              width: "47vw",
+              borderBottom: "1px solid grey",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "row",
+              padding: 5,
+            }}
+          >
+            <Image size="small" src={`${reviews[shown].image}`} />
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <ReviewNameWrapper>
+                <Icon name="user" /> {reviews[shown].name}
+              </ReviewNameWrapper>{" "}
+              <ReviewNameWrapper>
+                <Icon name="cog" /> {reviews[shown].role}
+              </ReviewNameWrapper>
+              <ReviewNameWrapper>
+                <Icon name="calendar outline" />
+                {reviews[shown].time}
+              </ReviewNameWrapper>
+            </div>
           </div>
-        </div>
-        <ReviewNameWrapper
-          style={{ textAlign: "center", marginTop: "5vh", fontSize: "20px" }}
-        >
-          {reviews[shown].comment}
-        </ReviewNameWrapper>
-      </Segment>
+          <ReviewNameWrapper
+            style={{ textAlign: "center", marginTop: "5vh", fontSize: "20px" }}
+          >
+            {reviews[shown].comment}
+          </ReviewNameWrapper>
+        </Segment>
+      </motion.div>
     </DetailsWrapper>
   );
 };

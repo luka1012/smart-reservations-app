@@ -8,7 +8,7 @@ import {
   AppImage,
   HeadlineWrapper,
   StyledText,
-} from "../RestaurantStyledComponents";
+} from "../util/RestaurantStyledComponents";
 import {
   Divider,
   Header,

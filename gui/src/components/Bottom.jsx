@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {DetailsWrapper, BottomContentItem} from "../RestaurantStyledComponents"
+import {DetailsWrapper, BottomContentItem} from "../util/RestaurantStyledComponents"
 import Logo from "../assets/images/logo.png";
 import {Icon, Image} from "semantic-ui-react"
 

@@ -24,19 +24,16 @@ import {
 } from "react-table";
 import { FormattedMessage } from "react-intl";
 import Axios from "axios";
-import UserModal from "./UserModal";
-import UserCredentialsModal from "./UserCredentialModal";
+import RestaurantModal from "./RestaurantModal";
 import { useSelector } from "react-redux";
 
-const UpdateUsers = (props) => {
+const UpdateRestaurants = (props) => {
   const [dataToRender, setDataToRender] = useState([]);
   const [selectedRowData, setRowData] = useState({});
   const [show, setShow] = useState(false);
   const [creating, setCreating] = useState();
   const [successfull, setSuccesfull] = useState(false);
   const [showCredentials, setShowCredentials] = useState(false);
-
-  const token = useSelector((state) => state.auth.token);
 
   function GlobalFilter({
     preGlobalFilteredRows,
@@ -66,18 +63,21 @@ const UpdateUsers = (props) => {
     );
   }
 
-  useEffect(() => {
-    Axios.get(`${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getAllUsers`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((result) => {
-        console.log(result.data);
+  const token = useSelector((state) => state.auth.token);
 
-        setDataToRender(result.data);
-      })
-      .catch((err) => console.log(err));
+  useEffect(async () => {
+    const result = await Axios.get(
+      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurants/getAllRestaurants`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log(result.data);
+
+    setDataToRender(result.data);
   }, []);
 
   const data = useMemo(() => [...dataToRender], [dataToRender]);
@@ -86,33 +86,15 @@ const UpdateUsers = (props) => {
     () => [
       {
         Header: (
-          <FormattedMessage id="wault.table.reason" defaultMessage="Username" />
+          <FormattedMessage id="wault.table.reason" defaultMessage="Name" />
         ),
-        accessor: "username",
+        accessor: "name",
       },
       {
         Header: (
-          <FormattedMessage id="wault.table.time" defaultMessage="Firstname" />
+          <FormattedMessage id="wault.table.time" defaultMessage="Address" />
         ),
-        accessor: "firstname",
-      },
-      {
-        Header: (
-          <FormattedMessage id="wault.table.amount" defaultMessage="Lastname" />
-        ),
-        accessor: "lastname",
-      },
-      {
-        Header: (
-          <FormattedMessage id="wault.table.saved" defaultMessage="Email" />
-        ),
-        accessor: "email",
-      },
-      {
-        Header: (
-          <FormattedMessage id="wault.table.created" defaultMessage="Role" />
-        ),
-        accessor: "role",
+        accessor: "address",
       },
       {
         Header: (
@@ -138,20 +120,6 @@ const UpdateUsers = (props) => {
               </Button>
               <Button
                 basic
-                color="orange"
-                size="mini"
-                onClick={() => {
-                  setShowCredentials(true);
-                  setRowData(row.original);
-                }}
-              >
-                <FormattedMessage
-                  id="wault.actions.deposit"
-                  defaultMessage="Credentials"
-                />
-              </Button>
-              <Button
-                basic
                 color="red"
                 size="mini"
                 loading={creating}
@@ -162,12 +130,22 @@ const UpdateUsers = (props) => {
 
                   setTimeout(() => {
                     Axios.post(
-                      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/deleteUser`,
-                      { ...row.original }
+                      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurant/deleteRestaurant`,
+                      { ...row.original },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
                     )
                       .then(async (res) => {
                         Axios.get(
-                          `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getAllUsers`
+                          `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurant/getAllRestaurants`,
+                          {
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          }
                         )
                           .then((res) => {
                             setDataToRender(res.data);
@@ -212,7 +190,7 @@ const UpdateUsers = (props) => {
 
   return (
     <div>
-      <Headline>Update existing users</Headline>
+      <Headline>Update existing restaurants</Headline>
 
       <GlobalFilter
         preGlobalFilteredRows={preGlobalFilteredRows}
@@ -261,19 +239,9 @@ const UpdateUsers = (props) => {
         </table>
       </styledTable>
       {show && (
-        <UserModal
+        <RestaurantModal
           show={show}
           setShow={setShow}
-          submitting={creating}
-          isSubmitting={setCreating}
-          selectedRow={selectedRowData}
-          setDataToRender={setDataToRender}
-        />
-      )}
-      {showCredentials && (
-        <UserCredentialsModal
-          show={showCredentials}
-          setShow={setShowCredentials}
           submitting={creating}
           isSubmitting={setCreating}
           selectedRow={selectedRowData}
@@ -284,4 +252,4 @@ const UpdateUsers = (props) => {
   );
 };
 
-export default UpdateUsers;
+export default UpdateRestaurants;

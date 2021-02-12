@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.io.*;
+import java.util.*;
 
 @Getter
 @Setter
@@ -15,7 +16,9 @@ public class RestaurantDto implements Serializable {
     @NotNull
     private String name;
     @NotNull
-    private String keyword;
+    private String address;
+    @NotNull
+    private List<String> images;
     @NotNull
     private String manager;
 

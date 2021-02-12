@@ -20,6 +20,23 @@ export const DetailsWrapper = styled.div`
   margin: 2vh auto;
 `;
 
+export const NavAccountsItem = styled.div`
+  padding-right: 20px;
+  font-weight: bold;
+  color: white;
+  margin: auto 0;
+  font-size: 15px;
+  cursor: default;
+  padding: 7px;
+  border-radius: 7px;
+
+  &:hover {
+    background-color: white;
+    color: #4287f5;
+    transition: 0.5s;
+  }
+`;
+
 export const ImageIndicator = styled.div`
   font-family: "Arvo", serif;
   &:hover {
@@ -338,16 +355,14 @@ export const ProjectNavigation = styled.div`
   background-color: #f4f5f7;
 `;
 
-
 export const ComponentWidget = styled.div`
   width: 70vw;
   height: 75vh;
   background-color: white;
   border-radius: 10px;
-  margin: 2vh 2vw;
+  margin: 2vh auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 0px 7px 13px 5px rgba(0, 0, 0, 0.05);
   @media only screen and (max-width: 1400px) {
     margin: 0 auto;
     width: 80vw;
@@ -355,6 +370,7 @@ export const ComponentWidget = styled.div`
 `;
 
 export const FormikWrapper = styled.div`
+  width: 35vw;
   @media only screen and (max-width: 1400px) {
   }
 `;

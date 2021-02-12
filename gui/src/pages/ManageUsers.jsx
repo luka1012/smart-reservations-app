@@ -7,7 +7,7 @@ import {
   SideWidgetMenu,
   WidgetItem,
   Headline,
-} from "../RestaurantStyledComponents";
+} from "../util/RestaurantStyledComponents";
 import NewUser from "../components/NewUser";
 import UpdateUsers from "../components/UpdateUsers";
 import { Icon } from "semantic-ui-react";

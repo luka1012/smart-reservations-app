@@ -8,7 +8,7 @@ import WelcomeImage from "../components/WelcomeImage";
 import Details from "../components/Details";
 import Reviews from "../components/Reviews";
 import Bottom from "../components/Bottom";
-import { HomeWrapper, AppImage } from "../RestaurantStyledComponents";
+import { HomeWrapper, AppImage } from "../util/RestaurantStyledComponents";
 import { motion } from "framer-motion";
 
 const Home = (props) => {

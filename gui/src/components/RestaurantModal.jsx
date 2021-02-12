@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import {
   Button,
@@ -18,6 +18,7 @@ import {
 } from "../util/RestaurantStyledComponents";
 import { Formik, Field, ErrorMessage } from "formik";
 import Axios from "axios";
+import { useSelector } from "react-redux";
 
 const managerOptions = [
   { value: "tests", text: "Test" },
@@ -25,6 +26,8 @@ const managerOptions = [
 ];
 
 const UserModal = (props) => {
+  const token = useSelector((state) => state.auth.token);
+
   return (
     <Modal
       show={props.show}
@@ -32,27 +35,35 @@ const UserModal = (props) => {
       dialogClassName="modal-35w"
     >
       <Modal.Header closeButton>
-        <Modal.Title>Update user</Modal.Title>
+        <Modal.Title>Update restaurant</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik
           initialValues={{
-            username: props.selectedRow.username,
-            firstname: props.selectedRow.firstname,
-            lastname: props.selectedRow.lastname,
-            email: props.selectedRow.email,
+            name: props.selectedRow.name,
+            address: props.selectedRow.address,
           }}
           onSubmit={async (values, { setSubmitting }) => {
             props.isSubmitting(true);
 
             setTimeout(() => {
               Axios.post(
-                `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/updateUser`,
-                { ...values }
+                `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurant/updateRestaurant`,
+                { ...values },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
               )
                 .then(() => {
                   Axios.get(
-                    `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getAllUsers`
+                    `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurant/getAllRestaurants`,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    }
                   )
                     .then((res) => {
                       props.setDataToRender(res.data);
@@ -86,46 +97,25 @@ const UserModal = (props) => {
               onSubmit={handleSubmit}
               size="large"
             >
-              <StyledLabel>Username</StyledLabel>
+              <StyledLabel>Name</StyledLabel>
               <Input
                 style={{ margin: "10px 0" }}
-                name="username"
-                placeholder="Username"
+                name="name"
+                placeholder="Name"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.username}
+                value={values.name}
                 disabled
               />
-              <StyledLabel>Firstname</StyledLabel>
+              <StyledLabel>Address</StyledLabel>
 
               <Input
                 style={{ margin: "10px 0" }}
-                name="firstname"
-                placeholder="Firstname"
+                name="address"
+                placeholder="Address"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.firstname}
-              />
-              <StyledLabel>Lastname</StyledLabel>
-
-              <Input
-                style={{ margin: "10px 0" }}
-                name="lastname"
-                placeholder="Lastname"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.lastname}
-              />
-              <StyledLabel>Email</StyledLabel>
-
-              <Input
-                style={{ margin: "10px 0" }}
-                name="email"
-                type="email"
-                placeholder="Email"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.email}
+                value={values.address}
               />
 
               <Button
