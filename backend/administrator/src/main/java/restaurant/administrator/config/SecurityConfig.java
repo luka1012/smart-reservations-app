@@ -1,5 +1,6 @@
 package restaurant.administrator.config;
 
+import org.modelmapper.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
@@ -60,6 +61,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public ModelMapper getModelMapper() {
+        return new ModelMapper();
     }
 
     @Bean

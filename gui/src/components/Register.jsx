@@ -101,7 +101,7 @@ const Register = (props) => {
               }
 
               props.saveToken(adminToken.data.token);
-              props.login(true, { ...values, profile: profile[0].data_url });
+              props.login(true, { ...values, profilePhoto: profile[0].data_url });
 
               addToast("Registration successfull!", {
                 appearance: "success",

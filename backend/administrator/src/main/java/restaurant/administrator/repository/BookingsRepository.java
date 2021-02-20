@@ -10,11 +10,7 @@ import java.util.*;
 
 @Component
 @Transactional
-public interface ImageRepository extends JpaRepository<ImageDao, Long> {
+public interface BookingsRepository extends JpaRepository<BookingDao, Long> {
 
-    Optional<ImageDao> findByData(String name);
-
-    Optional<List<ImageDao>> findByRestaurant(String restaurant);
-
-    Optional<ImageDao> findByOwner(String username);
+    Optional<List<BookingDao>> findByRestaurant(String restaurant);
 }

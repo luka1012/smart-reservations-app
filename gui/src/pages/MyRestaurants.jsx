@@ -18,8 +18,9 @@ import {
   Card,
   Placeholder,
   Select,
+  Input,
 } from "semantic-ui-react";
-import Modal from "../components/Modal";
+import BookingModal from "../components/BookingModal";
 import Logo from "../assets/images/logo.png";
 import { motion } from "framer-motion";
 import history from "../history";
@@ -27,14 +28,7 @@ import ImageModal from "../components/ImageModal";
 import Axios from "axios";
 import { Slide } from "react-slideshow-image";
 import { useSelector } from "react-redux";
-
-// const images = [
-//   "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-//   "https://images.unsplash.com/photo-1552566626-52f8b828add9?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-//   "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-//   "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80",
-//   "https://images.unsplash.com/photo-1571705042748-55feda1cfadc?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=967&q=80",
-// ];
+import { useToasts } from "react-toast-notifications";
 
 const properties = {
   duration: 5000,
@@ -65,10 +59,17 @@ const Restaurants = (props) => {
   const [showImageModal, setShowImage] = useState(false);
   const [current, setCurrent] = useState(0);
   const [dataToRender, setDataToRender] = useState([]);
+  const [restaurantName, setRestaurantName] = useState();
+  const [addressName, setAddressName] = useState();
+  const [available, setAvailableTables] = useState();
+  const [open, setOpenClosed] = useState();
+  const [showRestaurant, setShowRestaurant] = useState({});
 
   const token = useSelector((state) => state.auth.token);
 
   const user = useSelector((state) => state.auth.user);
+
+  const { addToast } = useToasts();
 
   const slideRef = useRef();
 
@@ -80,14 +81,44 @@ const Restaurants = (props) => {
     slideRef.current.goNext();
   };
 
-  const options = [
+  const openClosed = [
     {
       key: "open",
+      value: "Open",
       text: "Open",
     },
     {
       key: "closed",
+      value: "Closed",
       text: "Closed",
+    },
+  ];
+
+  const availablePlaces = [
+    {
+      key: "1",
+      value: "1",
+      text: "1",
+    },
+    {
+      key: "2",
+      value: "2",
+      text: "2",
+    },
+    {
+      key: "3",
+      value: "3",
+      text: "3",
+    },
+    {
+      key: "4",
+      value: "4",
+      text: "4",
+    },
+    {
+      key: "5",
+      value: "5",
+      text: "5",
     },
   ];
 
@@ -114,9 +145,14 @@ const Restaurants = (props) => {
       style={{
         backgroundImage:
           "url('https://images.unsplash.com/photo-1600331350693-a56b297f6f19?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=675&q=80')",
+        height: dataToRender.length < 3 && "100vh",
       }}
     >
-      <HomeWrapper style={{ height: dataToRender.length < 3 && "100vh" }}>
+      <HomeWrapper
+        style={{
+          height: dataToRender.length < 3 && "100vh",
+        }}
+      >
         <Navigation />
         <div style={{ display: "flex", flexDirection: "column" }}>
           {dataToRender.map((restaurant) => (
@@ -125,7 +161,7 @@ const Restaurants = (props) => {
               animate="visible"
               variants={secondVariants}
             >
-              <RestaurantWrapper>
+              <RestaurantWrapper style={{ height: "20vh" }}>
                 <div
                   style={{
                     height: "15vh",
@@ -139,148 +175,121 @@ const Restaurants = (props) => {
                   <Image size="small" src={`${restaurant.images[0]}`} />
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <ReviewNameWrapper>
-                      <Icon name="info circle" size="large" /> {restaurant.name}
+                      <Input
+                        iconPosition="left"
+                        value={restaurant.name}
+                        onChange={(e) => setRestaurantName(e.target.value)}
+                        icon="info circle"
+                      />
                     </ReviewNameWrapper>{" "}
                     <ReviewNameWrapper>
-                      <Icon name="address book" size="large" />{" "}
-                      {restaurant.address}
-                    </ReviewNameWrapper>
-                    <ReviewNameWrapper>
-                      <Select options={options} />
+                      <Input
+                        iconPosition="left"
+                        value={restaurant.address}
+                        onChange={(e) => setAddressName(e.target.value)}
+                        icon="address book"
+                      />
                     </ReviewNameWrapper>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <Button
                       color="orange"
-                      style={{ margin: "2vh 0" }}
+                      style={{ margin: "1.4vh 0", width: "7vw" }}
                       basic
-                      onClick={() => setShowModal(true)}
+                      onClick={() => {
+                        setShowRestaurant(restaurant);
+                        setShowModal(true);
+                      }}
                     >
                       <Icon name="book" />
-                      Book
+                      Bookings
                     </Button>
                     <Button
                       color="blue"
                       basic
-                      onClick={() => history.push("/restaurants/menu")}
+                      onClick={() =>
+                        history.push(`/updateMenu/${restaurant.name}`)
+                      }
                     >
-                      <Icon name="zoom" /> See menu
+                      <Icon name="zoom" /> Menus
                     </Button>
                   </div>
-                  <div>
-                    <div style={{ margin: "5vh 2vw" }}>
-                      <div style={{ fontFamily: "'Arvo', serif" }}>
-                        <Icon name="map" color="green" /> {restaurant.current}{" "}
-                        currently open
-                      </div>
-                    </div>
-                  </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <Icon
-                      name="facebook square"
-                      color="facebook"
-                      size="big"
-                      style={{ margin: "1vh 1vw" }}
-                    />
-                    <Icon
-                      name="twitter"
-                      color="blue"
-                      size="big"
-                      style={{ margin: "1vh 1vw" }}
-                    />
-                    <Icon
-                      name="instagram"
-                      color="red"
-                      size="big"
-                      style={{ margin: "1vh 1vw" }}
-                    />
-                  </div>
-                </div>
-                <Divider horizontal style={{ margin: "0 auto", width: "50vw" }}>
-                  <Header as="h4">
-                    <Icon name="image" color="blue" />
-                    Images
-                  </Header>
-                </Divider>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    margin: "0 auto",
-                  }}
-                >
-                  {restaurant.images.map((image) => (
-                    <ImageIndicator
-                      style={{
-                        width: "10vw",
-                        height: "15vh",
-                        margin: "1.5vh auto",
-                        paddingTop: "5px",
-                      }}
-                    >
-                      <Image
-                        style={{
-                          width: "10vw",
-                          height: "15vh",
-                          margin: "1.5vh auto",
-                          paddingTop: "5px",
-                        }}
-                        onClick={() => setShowImage(true)}
-                        src={`${image}`}
+                    <ReviewNameWrapper>
+                      <Select
+                        options={availablePlaces}
+                        icon={
+                          <Icon
+                            name="map"
+                            color="green"
+                            style={{ marginLeft: 5 }}
+                          />
+                        }
+                        placeholder="Available tables"
+                        iconPosition="left"
+                        onChange={(e, { value }) => setAvailableTables(value)}
                       />
-                    </ImageIndicator>
-                  ))}
+                    </ReviewNameWrapper>
+                    <ReviewNameWrapper>
+                      <Select
+                        options={openClosed}
+                        placeholder="Open/Closed"
+                        onChange={(e, { value }) => setOpenClosed(value)}
+                      />
+                    </ReviewNameWrapper>
+                    <ReviewNameWrapper>
+                      <Button
+                        color="green"
+                        onClick={() => {
+                          Axios.post(
+                            `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurants/updateRestaurant`,
+                            {
+                              ...restaurant,
+                              openClosed: `${open}`,
+                              availableTables: `${available}`,
+                            },
+                            {
+                              headers: {
+                                Authorization: `Bearer ${token}`,
+                              },
+                            }
+                          )
+                            .then((result) => {
+                              console.log(result.data);
+
+                              addToast("Restaurant updated!", {
+                                appearance: "success",
+                              });
+                            })
+                            .catch((e) => {
+                              addToast("Error while updating restaurant!", {
+                                appearance: "error",
+                              });
+                            });
+                        }}
+                      >
+                        <Icon name="upload" /> Update
+                      </Button>
+                    </ReviewNameWrapper>
+                  </div>
                 </div>
               </RestaurantWrapper>
-              {showImageModal && (
-                <ImageModal
-                  show={showImageModal}
-                  setShow={setShowImage}
-                  body={
-                    <div className="App">
-                      <div className="slide-container">
-                        <Slide ref={slideRef} {...properties}>
-                          {restaurant.images.map((each, index) => (
-                            <div key={index} className="each-slide">
-                              <Image
-                                className="lazy"
-                                src={each}
-                                size="massive"
-                              />
-                            </div>
-                          ))}
-                        </Slide>
-                      </div>
-
-                      <div className="slide-container buttons">
-                        <Button
-                          onClick={handleBack}
-                          color="orange"
-                          basic
-                          type="button"
-                        >
-                          Go Back
-                        </Button>
-                        <Button
-                          onClick={handleNext}
-                          color="green"
-                          basic
-                          type="button"
-                        >
-                          Go Next
-                        </Button>
-                      </div>
-                    </div>
-                  }
-                />
-              )}
             </motion.div>
           ))}
         </div>
         <div
           style={{
             boxShadow: "0px 7px 13px 5px rgba(0, 0, 0, 0.17)",
-            marginTop: dataToRender.length < 3 ? "90vh" : "5vh",
+            marginTop:
+              dataToRender.length === 0
+                ? "90vh"
+                : dataToRender.length === 1
+                ? "62vh"
+                : dataToRender.length === 2
+                ? "34vh"
+                : dataToRender.length === 3
+                ? "12vh"
+                : "0",
             height: "5vh",
             width: "70vw",
             display: "flex",
@@ -291,7 +300,13 @@ const Restaurants = (props) => {
           </div>
         </div>
       </HomeWrapper>
-      {showModal && <Modal show={showModal} setShow={setShowModal} />}
+      {showModal && (
+        <BookingModal
+          show={showModal}
+          setShow={setShowModal}
+          restaurant={showRestaurant}
+        />
+      )}
     </AppImage>
   );
 };

@@ -103,7 +103,7 @@ const Menu = (props) => {
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ padding: "50px", margin: "0 30px" }}>
               <Image
-                src={user.profile}
+                src={user.profilePhoto}
                 size="mini"
                 avatar
                 style={{ width: "80px", height: "80px", margin: "15px 20px" }}

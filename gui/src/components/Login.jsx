@@ -73,7 +73,7 @@ const Login = (props) => {
 
               axios
                 .get(
-                  `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getUserInfo`,
+                  `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getUserData`,
                   {
                     headers: {
                       Authorization: `Bearer ${adminToken.data.token}`

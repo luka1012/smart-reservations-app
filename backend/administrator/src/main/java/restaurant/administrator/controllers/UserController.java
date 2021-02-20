@@ -62,6 +62,14 @@ public class UserController {
         return ResponseEntity.ok(userDetails);
     }
 
+    @GetMapping("/getUserData")
+    public ResponseEntity<Object> getUserData(@NotNull(message = AdministratorConstants.USER_CAN_T_BE_NULL) @RequestParam(name = "username") String username) throws UserNotFoundException {
+
+        UserDto userData = userService.getUserData(username);
+
+        return ResponseEntity.ok(userData);
+    }
+
     @GetMapping("/getAllUsers")
     public ResponseEntity<Object> getAllUsers() {
 

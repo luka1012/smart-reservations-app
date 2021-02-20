@@ -17,11 +17,17 @@ import { Formik, Field, ErrorMessage, FieldArray } from "formik";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useToasts } from "react-toast-notifications";
+import TimeInputPolyfill from "react-time-input-polyfill";
+import Axios from "axios";
+import { useSelector } from "react-redux";
 
 const UserModal = (props) => {
   const [activeIndexs, setActiveIndexs] = useState([0, 1, 2, 3, 4, 5]);
+  const [value, onChange] = useState(new Date());
   const [sending, isSending] = useState(false);
   const { addToast } = useToasts();
+
+  const token = useSelector((state) => state.auth.token);
 
   return (
     <Modal
@@ -42,19 +48,32 @@ const UserModal = (props) => {
 
             console.log(values);
 
-            addToast("Test", {
-              appearance: "error",
-              autoDismiss: true,
-            });
+            Axios.post(
+              `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurants/addBooking`,
+              { ...values, restaurant: props.restaurant.name },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+              .then((result) => {
+                console.log(result.data);
 
-            props.setShow(false)
+                addToast("Booking added!", {
+                  appearance: "success",
+                  autoDismiss: true,
+                });
 
-            // setTimeout(() => {
-            //   Axios.post(
-            //     `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/tasks/createTask`,
-            //     { ...values }
-            //   ).then(() => )
-            // }, 3000);
+                props.setShow(false);
+              })
+              .catch((err) => {
+                isSending(false);
+                addToast("Error while adding booking", {
+                  appearance: "error",
+                  autoDismiss: true,
+                });
+              });
           }}
         >
           {({
@@ -80,6 +99,26 @@ const UserModal = (props) => {
             >
               <div
                 style={{
+                  marginTop: 5,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div
+                  style={{
+                    margin: "1vh 10px",
+                    width: "10vw",
+                  }}
+                >
+                  <Icon name="user outline" color="green" /> Lastname:
+                </div>
+                <Input
+                  name="lastname"
+                  onChange={(e) => setFieldValue("lastname", e.target.value)}
+                />
+              </div>
+              <div
+                style={{
                   marginTop: 15,
                   display: "flex",
                   flexDirection: "column",
@@ -87,7 +126,7 @@ const UserModal = (props) => {
               >
                 <div
                   style={{
-                    margin: "auto 10px",
+                    margin: "1vh 10px",
                     width: "5vw",
                   }}
                 >
@@ -103,6 +142,23 @@ const UserModal = (props) => {
               </div>
               <div
                 style={{
+                  margin: "1vh 10px",
+                  width: "5vw",
+                }}
+              >
+                <Icon name="calendar" color="green" /> Time:
+              </div>
+              <TimeInputPolyfill
+                value={value}
+                name="time"
+                onChange={({ value, element }) => {
+                  // Export the new value to the parent component
+                  onChange(value);
+                  setFieldValue("time", value);
+                }}
+              />
+              <div
+                style={{
                   marginTop: 15,
                   display: "flex",
                   flexDirection: "column",
@@ -110,7 +166,7 @@ const UserModal = (props) => {
               >
                 <div
                   style={{
-                    margin: "auto 10px",
+                    margin: "1vh 10px",
                     width: "5vw",
                   }}
                 >
@@ -146,7 +202,10 @@ const UserModal = (props) => {
                 >
                   Special request:
                 </div>
-                <TextArea />
+                <TextArea
+                  name="request"
+                  onChange={(e) => setFieldValue("request", e.target.value)}
+                />
               </div>
               <Button
                 basic

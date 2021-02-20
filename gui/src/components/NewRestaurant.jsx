@@ -45,13 +45,21 @@ const NewUser = (props) => {
     }
   };
 
-  const onChange = (imageList, addUpdateIndex) => {
+  const onChange = async (imageList, addUpdateIndex) => {
+    console.log(imageList);
     setImageRender(imageList);
+
+    let imagesData = [];
     // data for submit
-    imageList.map((image) => {
-      console.log(image)
-      setImages([...images, image.data_url]);
-    });
+    await Promise.all(
+      imageList.map((image) => {
+        console.log(images);
+        imagesData.push(image.data_url);
+      })
+    );
+
+    setImages(imagesData);
+    console.log(imagesData);
   };
 
   const user = useSelector((state) => state.auth.user);
@@ -164,6 +172,8 @@ const NewUser = (props) => {
                     ...values,
                     manager: `${user.firstname} ${user.lastname}`,
                     images,
+                    openClosed: "Closed",
+                    availableTables: 0,
                   },
                   {
                     headers: {

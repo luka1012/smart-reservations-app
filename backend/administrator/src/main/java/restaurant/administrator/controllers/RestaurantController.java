@@ -1,7 +1,6 @@
 package restaurant.administrator.controllers;
 
 
-
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.validation.annotation.*;
@@ -72,5 +71,21 @@ public class RestaurantController {
         List<RestaurantDto> restaurants = restaurantService.getRestaurantsByManager(manager);
 
         return ResponseEntity.ok(restaurants);
+    }
+
+    @PostMapping("/addBooking")
+    public ResponseEntity<Object> addBooking(@Valid @RequestBody BookingDto bookingDto) {
+
+        BookingDto result = restaurantService.addBooking(bookingDto);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/getBookings")
+    public ResponseEntity<Object> getBookings(@RequestParam("restaurantName") String restaurantName) throws RequestException {
+
+        List<BookingDto> bookingsByRestaurant = restaurantService.getBookingsByRestaurant(restaurantName);
+
+        return ResponseEntity.ok(bookingsByRestaurant);
     }
 }

@@ -21,4 +21,6 @@ public class RestaurantDao implements Serializable {
     private String name;
     private String address;
     private String manager;
+    private String openClosed;
+    private Integer availableTables;
 }

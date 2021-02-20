@@ -1,6 +1,7 @@
 package restaurant.administrator.services;
 
 
+import org.modelmapper.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.bcrypt.*;
@@ -31,6 +32,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @Log
     @Transactional
@@ -168,6 +172,29 @@ public class UserService implements UserDetailsService {
             return byUsername.get();
         else
             throw new UserNotFoundException(AdministratorConstants.USER_NOT_EXISTS);
+    }
+
+    @Log
+    public UserDto getUserData(String username) throws UserNotFoundException {
+
+        Optional<UserDao> byUsername = userRepository.findByUsername(username);
+
+        if (byUsername.isPresent()) {
+
+            UserDto user = mapper.map(byUsername.get(), UserDto.class);
+
+            Optional<ImageDao> byOwner = imageRepository.findByOwner(username);
+
+            if (byOwner.isPresent()) {
+                ImageDao imageDao = byOwner.get();
+
+                user.setProfilePhoto(new String(imageDao.getData()));
+            }
+
+            return user;
+        }
+        else
+            throw new UserNotFoundException("User for specified username does not exist!");
     }
 
     @Log

@@ -27,6 +27,7 @@ import Axios from "axios";
 import UserModal from "./UserModal";
 import UserCredentialsModal from "./UserCredentialModal";
 import { useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
 const UpdateUsers = (props) => {
   const [dataToRender, setDataToRender] = useState([]);
@@ -37,6 +38,8 @@ const UpdateUsers = (props) => {
   const [showCredentials, setShowCredentials] = useState(false);
 
   const token = useSelector((state) => state.auth.token);
+
+  const { addToast } = useToasts();
 
   function GlobalFilter({
     preGlobalFilteredRows,
@@ -163,15 +166,29 @@ const UpdateUsers = (props) => {
                   setTimeout(() => {
                     Axios.post(
                       `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/deleteUser`,
-                      { ...row.original }
+                      { ...row.original },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      }
                     )
                       .then(async (res) => {
                         Axios.get(
-                          `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getAllUsers`
+                          `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/getAllUsers`,
+                          {
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          }
                         )
                           .then((res) => {
                             setDataToRender(res.data);
                             setCreating(false);
+
+                            addToast("User deleted successfully!", {
+                              appearance: "success",
+                            });
                           })
                           .catch((err) => console.log(err));
                       })

@@ -22,4 +22,8 @@ public class RestaurantDto implements Serializable {
     @NotNull
     private String manager;
 
+    private String openClosed;
+
+    private Integer availableTables;
+
 }

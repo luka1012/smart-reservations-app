@@ -55,7 +55,7 @@ const NewUser = (props) => {
               setTimeout(() => {
                 Axios.post(
                   `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/user/createUser`,
-                  { ...values }
+                  { ...values, role: "USER" }
                 )
                   .then((res) => {
                     setSubmitting(false);

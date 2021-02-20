@@ -11,7 +11,8 @@ import ManageUsers from "../pages/ManageUsers";
 import ManageRestaurants from "../pages/ManageRestaurants";
 import UserProfile from "../pages/UserProfile";
 import UpdateUserProfile from "../pages/UpdateUser";
-import MyRestaurants from "../pages/MyRestaurants"
+import MyRestaurants from "../pages/MyRestaurants";
+import UpdateMenu from "../pages/UpdateMenu";
 
 const App = (props) => {
   return (
@@ -31,6 +32,7 @@ const App = (props) => {
             <Route path="/myProfile" exact component={UserProfile} />
             <Route path="/updateProfile" exact component={UpdateUserProfile} />
             <Route path="/myRestaurants" exact component={MyRestaurants} />
+            <Route path="/updateMenu/:restaurant" exact component={UpdateMenu} />
           </Switch>
         </Router>
       </IntlProvider>

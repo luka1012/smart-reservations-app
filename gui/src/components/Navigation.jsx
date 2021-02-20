@@ -38,7 +38,7 @@ const Navigation = (props) => {
           icon="false"
           trigger={
             <NavAccountsItem style={{ margin: "auto auto" }}>
-              {user !== undefined ? <Image src={user.profile} avatar/> : <Icon name="user" color="blue"/>}
+              {user !== undefined ? <Image src={user.profilePhoto} avatar/> : <Icon name="user" color="blue"/>}
               {user !== undefined && `${user.firstname} ${user.lastname}`}
             </NavAccountsItem>
           }

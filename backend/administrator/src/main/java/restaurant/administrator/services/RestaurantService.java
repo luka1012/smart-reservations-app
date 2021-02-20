@@ -1,6 +1,7 @@
 package restaurant.administrator.services;
 
 
+import org.modelmapper.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 import restaurant.administrator.aspects.*;
@@ -24,6 +25,12 @@ public class RestaurantService {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private BookingsRepository bookingsRepository;
+
+    @Autowired
+    private ModelMapper mapper;
+
     @Log
     public RestaurantDao createRestaurant(RestaurantDto restaurant) throws RestaurantAlreadyExistsException {
 
@@ -39,6 +46,8 @@ public class RestaurantService {
         restaurantDao.setName(restaurant.getName());
         restaurantDao.setAddress(restaurant.getAddress());
         restaurantDao.setManager(restaurant.getManager());
+        restaurantDao.setOpenClosed(restaurant.getOpenClosed());
+        restaurantDao.setAvailableTables(restaurant.getAvailableTables());
 
         restaurant.getImages().forEach(image -> {
             ImageDao imageDao = new ImageDao();
@@ -65,6 +74,8 @@ public class RestaurantService {
             restaurantDao.setAddress(restaurant.getAddress());
             restaurantDao.setName(restaurant.getName());
             restaurantDao.setManager(restaurant.getManager());
+            restaurantDao.setOpenClosed(restaurant.getOpenClosed());
+            restaurantDao.setAvailableTables(restaurant.getAvailableTables());
 
             return restaurantRepository.save(restaurantDao);
 
@@ -112,6 +123,8 @@ public class RestaurantService {
             restaurantDto.setAddress(item.getAddress());
             restaurantDto.setManager(item.getManager());
             restaurantDto.setName(item.getName());
+            restaurantDto.setOpenClosed(item.getOpenClosed());
+            restaurantDto.setAvailableTables(item.getAvailableTables());
 
             Optional<List<ImageDao>> byRestaurant = imageRepository.findByRestaurant(item.getName());
 
@@ -151,6 +164,8 @@ public class RestaurantService {
             restaurantDto.setAddress(item.getAddress());
             restaurantDto.setManager(item.getManager());
             restaurantDto.setName(item.getName());
+            restaurantDto.setAvailableTables(item.getAvailableTables());
+            restaurantDto.setOpenClosed(item.getOpenClosed());
 
             Optional<List<ImageDao>> byRestaurant = imageRepository.findByRestaurant(item.getName());
 
@@ -170,5 +185,31 @@ public class RestaurantService {
         });
 
         return restaurants;
+    }
+
+    public BookingDto addBooking(BookingDto bookingDto) {
+
+        BookingDao dao = mapper.map(bookingDto, BookingDao.class);
+
+        bookingsRepository.save(dao);
+
+        return bookingDto;
+    }
+
+    public List<BookingDto> getBookingsByRestaurant(String restaurant) throws RequestException {
+
+        Optional<List<BookingDao>> byRestaurant = bookingsRepository.findByRestaurant(restaurant);
+
+        if(byRestaurant.isPresent()) {
+
+            List<BookingDao> bookings = byRestaurant.get();
+
+            List<BookingDto> dtos = new ArrayList<>();
+
+            bookings.forEach(item -> dtos.add(mapper.map(item, BookingDto.class)));
+
+            return dtos;
+        } else
+            throw new RequestException("Bookings does not exist!");
     }
 }

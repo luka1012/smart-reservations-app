@@ -26,6 +26,8 @@ import { FormattedMessage } from "react-intl";
 import Axios from "axios";
 import RestaurantModal from "./RestaurantModal";
 import { useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
+
 
 const UpdateRestaurants = (props) => {
   const [dataToRender, setDataToRender] = useState([]);
@@ -34,6 +36,8 @@ const UpdateRestaurants = (props) => {
   const [creating, setCreating] = useState();
   const [successfull, setSuccesfull] = useState(false);
   const [showCredentials, setShowCredentials] = useState(false);
+
+  const { addToast } = useToasts();
 
   function GlobalFilter({
     preGlobalFilteredRows,
@@ -130,7 +134,7 @@ const UpdateRestaurants = (props) => {
 
                   setTimeout(() => {
                     Axios.post(
-                      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurant/deleteRestaurant`,
+                      `${window.ENVIRONMENT.AGILE_ADMINISTRATOR}/v1/restaurants/deleteRestaurant`,
                       { ...row.original },
                       {
                         headers: {
@@ -150,6 +154,9 @@ const UpdateRestaurants = (props) => {
                           .then((res) => {
                             setDataToRender(res.data);
                             setCreating(false);
+                            addToast("Restaurant deleted successfully!", {
+                              appearance: "success",
+                            });
                           })
                           .catch((err) => console.log(err));
                       })

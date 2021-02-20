@@ -46,15 +46,6 @@ const Manage = (props) => {
             >
               <Icon name="sitemap" color="blue" size="large" /> Update
             </WidgetItem>
-            <WidgetItem
-              className={selected === "menu" ? "user-item" : ""}
-              onClick={() => {
-                setShowPage("menus");
-                setSelected("menu");
-              }}
-            >
-              <Icon name="clipboard outline" color="blue" size="large" /> Menus
-            </WidgetItem>
           </SideWidgetMenu>
           {showPage === "newUser" ? (
             <NewRestaurant />
